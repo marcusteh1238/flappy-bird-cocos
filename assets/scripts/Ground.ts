@@ -1,4 +1,5 @@
 import { _decorator, Canvas, Component, director, Node, UITransform, Vec3 } from 'cc';
+import { GameCtrl } from './GameCtrl';
 const { ccclass, property } = _decorator;
 
 @ccclass('Ground')
@@ -30,7 +31,8 @@ export class Ground extends Component {
     public tempStartLocation2 = new Vec3;
     public tempStartLocation3 = new Vec3;
 
-    public gameSpeed: number = 50;
+    public gameCtrl: GameCtrl = new GameCtrl();
+    public gameSpeed: number = this.gameCtrl.speed;
 
     onLoad() {
         this.startup()
