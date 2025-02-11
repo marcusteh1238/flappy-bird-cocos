@@ -44,6 +44,7 @@ export class Results extends Component {
     showResults() {
         this.maxScore = Math.max(this.maxScore, this.currentScore);
         this.highScoreLabel.string = "High Score: " + this.maxScore;
+        this.highScoreLabel.node.active = true;
         this.resultEnd.node.active = true;
     }
 
