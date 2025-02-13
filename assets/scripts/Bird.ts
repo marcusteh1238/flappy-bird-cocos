@@ -53,6 +53,7 @@ export class Bird extends Component {
                 }
             })
             .start();
+            this.birdAnimation.play();
     }
 }
 
