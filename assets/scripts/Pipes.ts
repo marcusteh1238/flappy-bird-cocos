@@ -33,6 +33,11 @@ export class Pipes extends Component {
         tooltip: 'Min y pos for top pipe'
     })
     public minYPos: number = 400;
+    @property({
+        type: CCFloat,
+        tooltip: 'Distance between pipes'
+    })
+    public pipeDistance: number = 600;
     isPass = false;
 
     public tempStartLocationUp: Vec3 = new Vec3(0, 0, 0);
@@ -41,7 +46,7 @@ export class Pipes extends Component {
     public game;
     public pipeSpeed: number;
     public tempSpeed: number;
-
+    private hasCreatedPipe = false;
     onLoad() {
         this.game = find('GameCtrl').getComponent('GameCtrl');
         this.pipeSpeed = this.game.pipeSpeed;
@@ -80,8 +85,11 @@ export class Pipes extends Component {
         }
 
         if (this.topPipe.position.x < -this.scene.width) {
-            this.game.createPipe();
             this.destroy();
+        }
+        if (!this.hasCreatedPipe && this.topPipe.position.x < this.scene.width - this.pipeDistance) {
+            this.hasCreatedPipe = true;
+            this.game.createPipe();
         }
     }
 }

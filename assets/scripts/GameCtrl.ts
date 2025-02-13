@@ -1,4 +1,4 @@
-import { _decorator, CCInteger, Component, director, EventKeyboard, input, Input, KeyCode } from 'cc';
+import { _decorator, CCInteger, Collider2D, Component, Contact2DType, director, EventKeyboard, input, Input, IPhysics2DContact, KeyCode } from 'cc';
 import { Ground } from './Ground';
 import { Results } from './Results';
 import { Bird } from './Bird';
@@ -38,46 +38,38 @@ export class GameCtrl extends Component {
         type: PipePool
     })
     public pipePool: PipePool;
+    private isGameOver = false;
 
     onLoad() {
         this.initListener();
         this.results.resetScore();
+        this.isGameOver = true;
         director.pause();
     }
 
-    // TODO: Delete in final version
-    onKeyDown(event: EventKeyboard) {
-        switch(event.keyCode) {
-            case KeyCode.KEY_A:
-                this.gameOver();
-                break;
-            case KeyCode.KEY_P:
-                this.results.addScore();
-                break;
-            case KeyCode.KEY_Q:
-                this.resetGame();
-                break;
-        }
-    }
-
     initListener() {
-        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         this.node.on(Input.EventType.TOUCH_START, () => {
+            if (this.isGameOver) {
+                this.resetGame();
+            }
             this.bird.fly()
         }, this);
     }
 
     startGame() {
+        this.isGameOver = false;
         this.results.hideResults();
         director.resume();
     }
 
     gameOver() {
+        this.isGameOver = true;
         this.results.showResults();
         director.pause();
     }
 
     resetGame() {
+        this.isGameOver = false;
         this.results.resetScore();
         this.bird.resetBird();
         this.pipePool.reset();
@@ -90,6 +82,26 @@ export class GameCtrl extends Component {
 
     createPipe() {
         this.pipePool.addPool();
+    }
+
+    contactGroundPipe() {
+        const collider = this.bird.getComponent(Collider2D);
+        if (collider) {
+            collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        }
+        if (this.bird.isStruck) {
+            this.isGameOver = true;
+            this.gameOver();
+        }
+    }
+
+
+    onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
+        this.bird.isStruck = true;
+    }
+
+    update() {
+        this.contactGroundPipe()
     }
 }
 
